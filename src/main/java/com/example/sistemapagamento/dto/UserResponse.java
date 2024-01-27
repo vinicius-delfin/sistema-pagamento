@@ -2,5 +2,5 @@ package com.example.sistemapagamento.dto;
 
 import java.util.UUID;
 
-public record UserResponse(UUID id, String nome, String email, String password) {
+public record UserResponse(UUID id, String name, String email, String password) {
 }
