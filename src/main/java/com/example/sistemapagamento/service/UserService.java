@@ -4,9 +4,12 @@ import com.example.sistemapagamento.dto.UserResponse;
 import com.example.sistemapagamento.entity.User;
 import com.example.sistemapagamento.repository.UserRepository;
 import com.example.sistemapagamento.util.RandomString;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.io.UnsupportedEncodingException;
 
 
 @Service
@@ -17,7 +20,9 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public UserResponse registerUser(User user) {
+    private final MailService emailSender;
+
+    public UserResponse registerUser(User user) throws MessagingException, UnsupportedEncodingException {
         if (userRepository.findByEmail(user.getEmail()) != null) {
             throw new RuntimeException("Email already exists!");
         } else {
@@ -30,9 +35,12 @@ public class UserService {
 
             User savedUser = userRepository.save(user);
 
-            return new UserResponse(
+            UserResponse response = new UserResponse(
                     savedUser.getId(), savedUser.getName(), savedUser.getEmail(), savedUser.getPassword()
             );
+
+            emailSender.sendVerificationEmail(user);
+            return response;
         }
     }
 

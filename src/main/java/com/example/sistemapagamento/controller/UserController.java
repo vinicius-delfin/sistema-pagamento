@@ -5,10 +5,13 @@ import com.example.sistemapagamento.dto.UserResponse;
 import com.example.sistemapagamento.entity.User;
 import com.example.sistemapagamento.repository.UserRepository;
 import com.example.sistemapagamento.service.UserService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @RestController
@@ -21,14 +24,23 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponse> registerUser(@RequestBody UserRequest request) {
+    public ResponseEntity<UserResponse> registerUser(@RequestBody UserRequest request) throws MessagingException, UnsupportedEncodingException {
 
         User user = request.toModel();
         UserResponse savedUser = userService.registerUser(user);
         return ResponseEntity.ok().body(savedUser);
     }
 
-    @GetMapping
+    @GetMapping("verify")
+    public String verifyUser(@Param("code") String code) {
+        if (userService.verify(code)) {
+            return "verify_success";
+        } else {
+            return "verify_fail";
+        }
+    }
+
+    @GetMapping("/list")
     public List<User> listAll() {
         return userRepository.findAll();
     }
