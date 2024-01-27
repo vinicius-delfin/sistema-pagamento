@@ -40,9 +40,8 @@ public class UserController {
         }
     }
 
-    @GetMapping("/list")
-    public List<User> listAll() {
-        return userRepository.findAll();
+    @GetMapping("/test")
+    public String test() {
+        return "Logged in!";
     }
-
 }
